@@ -1,0 +1,36 @@
+HTML
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Проект Django</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Главная страница проекта</h1>
+            <p class="subtitle">Сервер Django, PostgreSQL и статические файлы успешно связаны!</p>
+        </header>
+
+        <main>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Статический CSS</h3>
+                    <p>Если карточки расположены ровно и имеют темный стиль — файл <code>style.css</code> успешно подключился.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивный JS</h3>
+                    <p>Нажмите на кнопку ниже для проверки связи с JS-скриптом.</p>
+                    <button id="demo-btn" class="btn">Проверить JavaScript</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
