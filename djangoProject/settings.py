@@ -1,3 +1,4 @@
+import os
 """
 Django settings for djangoProject project.
 
@@ -117,6 +118,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
@@ -136,3 +142,13 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+NSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'main',  # Приложение
+]
