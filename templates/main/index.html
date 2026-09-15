@@ -1,36 +1,63 @@
-HTML
+{% extends 'main/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой Проект Django</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Главная страница проекта</h1>
-            <p class="subtitle">Сервер Django, PostgreSQL и статические файлы успешно связаны!</p>
-        </header>
 
-        <main>
-            <div class="card-grid">
-                <div class="card">
-                    <h3>Статический CSS</h3>
-                    <p>Если карточки расположены ровно и имеют темный стиль — файл <code>style.css</code> успешно подключился.</p>
-                </div>
+{% block title %}Мой путь — Книга работ{% endblock %}
 
-                <div class="card">
-                    <h3>Интерактивный JS</h3>
-                    <p>Нажмите на кнопку ниже для проверки связи с JS-скриптом.</p>
-                    <button id="demo-btn" class="btn">Проверить JavaScript</button>
+{% block content %}
+<div class="book-container">
+    <h1 class="main-title">История моей работы</h1>
+    <p class="subtitle">Используйте кнопки снизу для перелистывания страниц-этапов</p>
+
+    <!-- Трёхмерный контейнер книги -->
+    <div class="book" id="work-book">
+        {% for page in pages %}
+        <div class="book-page {% if forloop.first %}active{% endif %}" data-page="{{ forloop.counter }}">
+            
+            <!-- Динамический фон страницы -->
+            <div class="page-bg" {% if page.bg_image %}style="background-image: url('{{ page.bg_image.url }}');"{% endif %}></div>
+            <div class="page-overlay"></div>
+
+            <div class="page-content">
+                <div class="page-header-badge">Страница {{ page.page_number }} из 3</div>
+
+                <!-- СЕТКА ИЗ 3-Х ОКОН -->
+                <div class="windows-grid">
+                    
+                    <!-- ОКНО 1: Дата и Место работы -->
+                    <div class="window-box window-date">
+                        <div class="window-title">📅 Период и Компания</div>
+                        <h3>{{ page.position }}</h3>
+                        <p class="company-name"><strong>Организация:</strong> {{ page.company_name }}</p>
+                        <span class="period-badge">{{ page.period }}</span>
+                    </div>
+
+                    <!-- ОКНО 2: Навыки и Достижения -->
+                    <div class="window-box window-skills">
+                        <div class="window-title">⚡ Навыки и достижения</div>
+                        <p>{{ page.skills_and_achievements|linebreaks }}</p>
+                    </div>
+
+                    <!-- ОКНО 3: Описание работы -->
+                    <div class="window-box window-desc">
+                        <div class="window-title">🛠️ Описание работы</div>
+                        <p>{{ page.description|linebreaks }}</p>
+                    </div>
+
                 </div>
             </div>
-        </main>
+        </div>
+        {% empty %}
+        <div class="card">
+            <p>Страницы истории пока не добавлены в админ-панели.</p>
+        </div>
+        {% endfor %}
     </div>
 
-    <script src="{% static 'js/main.js' %}"></script>
-</body>
-</html>
+    <!-- Навигация перелистывания -->
+    <div class="book-controls">
+        <button id="prev-page-btn" class="btn btn-nav" disabled>&larr; Предыдущая этап</button>
+        <span id="page-indicator">Страница 1</span>
+        <button id="next-page-btn" class="btn btn-nav">Следующий этап &rarr;</button>
+    </div>
+</div>
+{% endblock %}

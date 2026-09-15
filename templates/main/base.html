@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Динамический заголовок страницы. Если страница не задаст заголовок, отобразится дефолтный -->
+    <title>{% block title %}Мой проект Django{% endblock %}</title>
+
+    <!-- Подключение главного файла стилей CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Место для подключения дополнительных CSS-файлов конкретных страниц -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Общая шапка сайта (Header) -->
+    <header class="site-header">
+        <div class="header-container">
+            <a href="{% url 'home' %}" class="logo">DjangoApp</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'home' %}">Главная</a></li>
+                    <!-- Сюда в будущем добавим ссылки на другие страницы -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ: Сюда будет подставляться уникальный код из других файлов -->
+    <main class="site-main">
+        {% block content %}
+        <!-- Контент по умолчанию, если блок пустой -->
+        {% endblock %}
+    </main>
+
+    <!-- Общий подвал сайта (Footer) -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 Мой Django Проект. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- Место для подключения JS-скриптов -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
