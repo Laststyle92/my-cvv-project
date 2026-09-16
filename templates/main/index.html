@@ -4,21 +4,40 @@
 {% block title %}Мой путь — Книга работ{% endblock %}
 
 {% block content %}
-<div class="book-container">
-    <h1 class="main-title">История моей работы</h1>
-    <p class="subtitle">Используйте кнопки снизу для перелистывания страниц-этапов</p>
+<div class="book-container py-3">
+    <div class="text-center mb-4">
+        <h1 class="main-title fw-bold text-info">История моей работы</h1>
+        <p class="subtitle text-light opacity-75">Используйте кнопки снизу для перелистывания страниц-этапов</p>
+    </div>
+
+
+    <div class="text-center mb-4">
+    <!-- Блок с фото / аватаром -->
+    <div class="profile-photo-wrapper mb-3">
+        {% if profile.photo %}
+            <!-- Вариант 1: Динамическое фото из базы данных Django -->
+            <img src="{{ profile.photo.url }}" alt="Фото профиля" class="rounded-circle img-thumbnail border-info shadow" style="width: 130px; height: 130px; object-fit: cover;">
+        {% else %}
+            <!-- Вариант 2: Статическое фото из папки static -->
+            <img src="{% static 'images/profile.jpg' %}" alt="Фото профиля" class="rounded-circle img-thumbnail border-info shadow" style="width: 130px; height: 130px; object-fit: cover;">
+        {% endif %}
+    </div>
+
+    <h1 class="main-title fw-bold text-info">История моей работы</h1>
+    <p class="subtitle text-light opacity-75">Используйте кнопки снизу для перелистывания страниц-этапов</p>
+</div>
 
     <!-- Трёхмерный контейнер книги -->
     <div class="book" id="work-book">
         {% for page in pages %}
-        <div class="book-page {% if forloop.first %}active{% endif %}" data-page="{{ forloop.counter }}">
+        <div class="book-page {% if forloop.first %}active{% endif %}" data-page="{{ forloop.counter }}" style="display: {% if forloop.first %}block{% else %}none{% endif %};">
             
             <!-- Динамический фон страницы -->
             <div class="page-bg" {% if page.bg_image %}style="background-image: url('{{ page.bg_image.url }}');"{% endif %}></div>
             <div class="page-overlay"></div>
 
             <div class="page-content">
-                <div class="page-header-badge">Страница {{ page.page_number }} из 3</div>
+                <div class="page-header-badge mb-3">Страница {{ forloop.counter }} из {{ pages|length }}</div>
 
                 <!-- СЕТКА ИЗ 3-Х ОКОН -->
                 <div class="windows-grid">
@@ -34,30 +53,96 @@
                     <!-- ОКНО 2: Навыки и Достижения -->
                     <div class="window-box window-skills">
                         <div class="window-title">⚡ Навыки и достижения</div>
-                        <p>{{ page.skills_and_achievements|linebreaks }}</p>
+                        <p>
+                            {% if page.skills_and_achievements %}
+                                {{ page.skills_and_achievements|linebreaks }}
+                            {% else %}
+                                <span class="text-muted">Информация уточняется</span>
+                            {% endif %}
+                        </p>
                     </div>
 
                     <!-- ОКНО 3: Описание работы -->
                     <div class="window-box window-desc">
                         <div class="window-title">🛠️ Описание работы</div>
-                        <p>{{ page.description|linebreaks }}</p>
+                        <p>
+                            {% if page.description %}
+                                {{ page.description|linebreaks }}
+                            {% elif page.content %}
+                                {{ page.content|linebreaks }}
+                            {% else %}
+                                <span class="text-muted">Описание не указано</span>
+                            {% endif %}
+                        </p>
                     </div>
 
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="card">
-            <p>Страницы истории пока не добавлены в админ-панели.</p>
+        <div class="card p-4 text-center bg-dark text-light border-secondary">
+            <p class="m-0">Страницы истории пока не добавлены в админ-панели.</p>
         </div>
         {% endfor %}
     </div>
 
     <!-- Навигация перелистывания -->
-    <div class="book-controls">
-        <button id="prev-page-btn" class="btn btn-nav" disabled>&larr; Предыдущая этап</button>
-        <span id="page-indicator">Страница 1</span>
-        <button id="next-page-btn" class="btn btn-nav">Следующий этап &rarr;</button>
+    <div class="book-controls d-flex justify-content-between align-items-center mt-4">
+        <button id="prev-page-btn" class="btn btn-nav btn-outline-info" disabled>&larr; Предыдущий этап</button>
+        <span id="page-indicator" class="text-light">
+            Страница <span id="current-page-num" class="fw-bold text-info">1</span> из {{ pages|length }}
+        </span>
+        <button id="next-page-btn" class="btn btn-nav btn-info" {% if pages|length <= 1 %}disabled{% endif %}>Следующий этап &rarr;</button>
     </div>
+
 </div>
+
+<!-- Скрипт перелистывания -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let currentPage = 1;
+        const totalPages = {{ pages|length }};
+        
+        const prevBtn = document.getElementById('prev-page-btn');
+        const nextBtn = document.getElementById('next-page-btn');
+        const pageNumSpan = document.getElementById('current-page-num');
+        const pages = document.querySelectorAll('.book-page');
+
+        function showPage(pageIndex) {
+            if (pageIndex < 1 || pageIndex > totalPages) return;
+
+            // Скрываем все страницы и убираем класс active
+            pages.forEach(p => {
+                p.style.display = 'none';
+                p.classList.remove('active');
+            });
+
+            // Находим нужную страницу, делаем её видимой и добавляем active
+            const targetPage = document.querySelector(`.book-page[data-page="${pageIndex}"]`);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                targetPage.classList.add('active');
+            }
+
+            currentPage = pageIndex;
+            if (pageNumSpan) pageNumSpan.textContent = currentPage;
+
+            // Обновляем состояние кнопок
+            if (prevBtn) prevBtn.disabled = (currentPage === 1);
+            if (nextBtn) nextBtn.disabled = (currentPage === totalPages || totalPages === 0);
+        }
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function () {
+                showPage(currentPage - 1);
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function () {
+                showPage(currentPage + 1);
+            });
+        }
+    });
+</script>
 {% endblock %}

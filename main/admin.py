@@ -1,44 +1,47 @@
 from django.contrib import admin
-from .models import Item
+from .models import Item, Skill, Experience, Project, Post, WorkExperience
+
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('title', 'created_at')
     search_fields = ('title', 'description')
 
-from django.contrib import admin
-from .models import Skill, Experience, Project
 
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
     list_display = ('title', 'percent')
 
+
 @admin.register(Experience)
 class ExperienceAdmin(admin.ModelAdmin):
     list_display = ('position', 'company', 'period')
+
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('title', 'link')
 
 
-from django.contrib import admin
-from .models import Post
-
-
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    # Колонки, которые будут отображаться в списке записей
     list_display = ('title', 'created_at', 'is_published')
-
-    # Поля, по которым можно кликнуть для перехода к редактированию
     list_display_links = ('title',)
-
-    # Поля, по которым работает поиск
     search_fields = ('title', 'content')
-
-    # Фильтры в правой колонке
     list_filter = ('is_published', 'created_at')
-
-    # Возможность менять статус публикации прямо из списка
     list_editable = ('is_published',)
+
+
+@admin.register(WorkExperience)
+class WorkExperienceAdmin(admin.ModelAdmin):
+    list_display = ('page_number', 'position', 'company_name', 'period', 'is_published')
+    list_display_links = ('position',)  # Делаем ссылкой должность, чтобы исправить ошибку E124
+    list_editable = ('page_number', 'is_published')
+    ordering = ('page_number',)
+
+from django.contrib import admin
+from .models import Profile, WorkExperience  # Замените на ваши модели
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'title')

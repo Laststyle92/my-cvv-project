@@ -5,25 +5,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Динамический заголовок страницы. Если страница не задаст заголовок, отобразится дефолтный -->
-    <title>{% block title %}Мой проект Django{% endblock %}</title>
+    <!-- Динамический заголовок страницы -->
+    <title>{% block title %}Мой путь — Книга работ{% endblock %}</title>
 
     <!-- Подключение главного файла стилей CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
+    <!-- Стили анимированного фона и фиксированного меню -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Анимированный живой фон */
+        body {
+            margin: 0;
+            padding-top: 80px; /* Отступ, чтобы контент не перекрывался шапкой */
+            background: linear-gradient(-45deg, #0b132b, #1c2541, #0f172a, #141b36);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #ffffff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Закрепленная шапка с эффектом размытия (Glassmorphism) */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(28, 37, 65, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 0;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #5bc0be;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .logo:hover {
+            color: #6fffe9;
+        }
+
+        .main-nav ul {
+            display: flex;
+            gap: 12px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-nav a {
+            color: #e0e6ed;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .main-nav a:hover {
+            background: #007bff;
+            color: #ffffff;
+            border-color: #007bff;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+        }
+
+        /* Общий подвал */
+        .site-footer {
+            text-align: center;
+            padding: 25px 20px;
+            background: rgba(11, 19, 43, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 60px;
+            color: #8d99ae;
+        }
+
+        .footer-container p {
+            margin: 0;
+        }
+    </style>
+
     <!-- Место для подключения дополнительных CSS-файлов конкретных страниц -->
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body id="top">
 
     <!-- Общая шапка сайта (Header) -->
     <header class="site-header">
         <div class="header-container">
-            <a href="{% url 'home' %}" class="logo">DjangoApp</a>
+            <a href="{% url 'home' %}" class="logo">🚀 Portfolio</a>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="{% url 'home' %}">Главная</a></li>
-                    <!-- Сюда в будущем добавим ссылки на другие страницы -->
+                    <li><a href="#top">🏠 Наверх</a></li>
+                    <li><a href="#work-book">📖 Книга работ</a></li>
+                    <li><a href="#site-footer">⬇️ Вниз</a></li>
                 </ul>
             </nav>
         </div>
@@ -36,8 +137,8 @@
         {% endblock %}
     </main>
 
-    <!-- Общий подвал сайта (Footer) -->
-    <footer class="site-footer">
+    <!-- Общий подвал сайта (Footer) с якорем для кнопки Вниз -->
+    <footer class="site-footer" id="site-footer">
         <div class="footer-container">
             <p>&copy; 2026 Мой Django Проект. Все права защищены.</p>
         </div>

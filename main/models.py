@@ -71,20 +71,67 @@ class Post(models.Model):
 
 
 # --- НОВАЯ МОДЕЛЬ ДЛЯ 3D-КНИГИ ИСТОРИИ РАБОТ ---
+from django.db import models
+
 class WorkExperience(models.Model):
-    company_name = models.CharField(max_length=200, verbose_name="Компания / Организация")
-    position = models.CharField(max_length=200, verbose_name="Должность")
-    period = models.CharField(max_length=100, verbose_name="Период работы (например, 2024 — 2026)")
-    skills_and_achievements = models.TextField(verbose_name="Мои навыки и достижения")
-    description = models.TextField(verbose_name="Описание работы и обязанности")
-    bg_image = models.ImageField(upload_to='work_bg/', blank=True, null=True, verbose_name="Фоновое изображение страницы")
-    page_number = models.PositiveIntegerField(default=1, verbose_name="Номер страницы в книге (1, 2, 3...)")
+    page_number = models.IntegerField(default=1, verbose_name="Номер страницы")
+    position = models.CharField(max_length=255, verbose_name="Должность / Название этапа")
+    company_name = models.CharField(max_length=255, verbose_name="Организация / Компания")
+    period = models.CharField(max_length=100, verbose_name="Период (например: 2020 — 2022)")
+    skills_and_achievements = models.TextField(verbose_name="Навыки и достижения")
+    description = models.TextField(verbose_name="Описание работы")
+    bg_image = models.ImageField(upload_to='book_bg/', blank=True, null=True, verbose_name="Фоновый рисунок")
     is_published = models.BooleanField(default=True, verbose_name="Опубликовано")
 
     class Meta:
-        verbose_name = "Этап работы (Страница)"
+        verbose_name = "Этап работы (Книга)"
         verbose_name_plural = "Этапы работы (Книга)"
         ordering = ['page_number']
 
     def __str__(self):
-        return f"Страница {self.page_number}: {self.position} в {self.company_name}"
+        return f"Страница {self.page_number}: {self.position}"
+
+
+from django.db import models
+
+
+class Page(models.Model):
+    position = models.CharField(max_length=200, verbose_name="Должность / Заголовок")
+    company_name = models.CharField(max_length=200, verbose_name="Организация")
+    period = models.CharField(max_length=100, verbose_name="Период работы")
+    skills_and_achievements = models.TextField(blank=True, verbose_name="Навыки и достижения")
+    description = models.TextField(blank=True, verbose_name="Подробное описание")
+
+    # Поле для фотографии (занимает 1/3 в верстке)
+    image = models.ImageField(upload_to='pages_photos/', blank=True, null=True, verbose_name="Фото страницы")
+
+    # Флаг публикации / сортировка
+    is_published = models.BooleanField(default=True, verbose_name="Опубликовано")
+    order = models.IntegerField(default=0, verbose_name="Порядок сортировки")
+
+    class Meta:
+        verbose_name = "Страница книги"
+        verbose_name_plural = "Страницы книги"
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f"{self.position} - {self.company_name}"
+
+class WorkPage(models.Model):  # Ваша модель
+    # ... ваши текущие поля ...
+    photo = models.ImageField(upload_to='profiles/', blank=True, null=True, verbose_name="Фото профиля")
+
+from django.db import models
+
+class Profile(models.Model):
+    full_name = models.CharField(max_length=100, verbose_name="Имя и Фамилия")
+    title = models.CharField(max_length=150, verbose_name="Должность / Специализация")
+    photo = models.ImageField(upload_to='profiles/', verbose_name="Фото профиля", blank=True, null=True)
+    bio = models.TextField(verbose_name="О себе / Краткое описание", blank=True)
+
+    class Meta:
+        verbose_name = "Профиль"
+        verbose_name_plural = "Профиль"
+
+    def __str__(self):
+        return self.full_name

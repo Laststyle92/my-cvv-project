@@ -1,33 +1,63 @@
 from django.shortcuts import render
-from .models import Item
+from .models import WorkExperience, Post, Item
 
 def index(request):
-    # Получаем все объекты из PostgreSQL, отсортированные по дате
-    items = Item.objects.all().order_by('-created_at')
+    """
+    Главная страница: загружает данные для 3D-книги (WorkExperience),
+    новостей/записей (Post) и элементов (Item).
+    """
+    # 1. Страницы 3D-книги (сортировка по номеру страницы)
+    try:
+        pages = WorkExperience.objects.filter(is_published=True).order_by('page_number')
+    except Exception:
+        pages = WorkExperience.objects.all()
 
-    # Передаем данные в контекст шаблона
+    # 2. Записи / Посты
+    try:
+        posts = Post.objects.filter(is_published=True).order_by('-created_at')
+    except Exception:
+        posts = Post.objects.all()
+
+    # 3. Дополнительные элементы
+    try:
+        items = Item.objects.all().order_by('-created_at')
+    except Exception:
+        items = Item.objects.all()
+
+    # Единый контекст со всеми данными
     context = {
-        'items': items
+        'pages': pages,
+        'posts': posts,
+        'items': items,
     }
+
+    return render(request, 'main/index.html', context)
+
+
+from django.shortcuts import render
+from .models import WorkExperience, Post, Item, Skill, Project
+
+def index(request):
+    # Загружаем опубликованные страницы книги по порядку номеров
+    try:
+        pages = WorkExperience.objects.filter(is_published=True).order_by('page_number')
+    except Exception:
+        pages = WorkExperience.objects.all()
+
+    context = {
+        'pages': pages,
+    }
+
     return render(request, 'main/index.html', context)
 
 from django.shortcuts import render
+from .models import WorkExperience, Profile
 
 def index(request):
-    return render(request, 'main/index.html')
+    pages = WorkExperience.objects.filter(is_published=True).order_by('page_number')
+    profile = Profile.objects.first()  # Берем первую запись профиля
 
-
-from django.shortcuts import render
-from .models import Post
-
-
-def index(request):
-    # Получаем из базы только опубликованные записи (is_published=True)
-    posts = Post.objects.filter(is_published=True)
-
-    # Передаем список записей в контексте шаблона под именем 'posts'
-    context = {
-        'posts': posts
-    }
-
-    return render(request, 'main/index.html', context)
+    return render(request, 'main/index.html', {
+        'pages': pages,
+        'profile': profile,
+    })
